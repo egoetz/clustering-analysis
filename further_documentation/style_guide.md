@@ -11,17 +11,18 @@ One should only push partially untested code to test or development branches. Th
 ## Code
 **PEP 8**
 All written code must comply with Python's PEP 8 conventions. Some notable rules:
-    1) 4 spaces per indentation level
-    2) all lines limited to 79 characters
-    3) top-level functions and class definitions should have a border of two new lines below and above
-    4) methods within a class should have a border of a single blank line below and above
-    5) code can only utilize UTF-8 characters
-    6) imports from different applications and libraries should be on different lines and imported in the following order: standard library imports, third party imports, local imports.
-    7) files, functions/methods, and variables should be in `snake_case`
-    8) classes should use `CapWords` as their naming convention
+  1. 4 spaces per indentation level
+  2. all lines limited to 79 characters
+  3. top-level functions and class definitions should have a border of two new lines below and above
+  4. methods within a class should have a border of a single blank line below and above
+  5. code can only utilize UTF-8 characters
+  6. imports from different applications and libraries should be on different lines and imported in the following order: standard library imports, third party imports, local imports.
+  7. files, functions/methods, and variables should be in `snake_case`
+  8. classes should use `CapWords` as their naming convention
+
 Further instructions, clarifications, and justifications exist in the [official Python documentation](https://www.python.org/dev/peps/pep-0008/#introduction).
 An additional project level choice:
-    - when breaking, we break before a binary operator (note that this is not mandatory as a part of PEP 8 but recommended)
+  - when breaking, we break before a binary operator (note that this is not mandatory as a part of PEP 8 but recommended)
     
 **Documentation**
 All classes, functions, and methods should have an informative docstring. Classes' documentation should explain the purpose of the class while maintaining abstraction. Methods' and functions' documentation should explain their preconditions, postconditions, and side effects. Typical explaination of parameters and return value ought to exist in the regular Python format. 
