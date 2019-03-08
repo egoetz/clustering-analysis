@@ -29,7 +29,7 @@ class KMeans(ClusteringAlgorithm):
 
 
 
-    def getK(self):
+    def get_k(self):
         return 2
 
 
