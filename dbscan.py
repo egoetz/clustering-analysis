@@ -5,57 +5,59 @@ from numpy import ndarray, array_equal
 
 
 class Dbscan(ClusteringAlgorithm):
-    def __init__(self, data, answer_key):
+    def __init__(self, data, answer_key, min_distance=None, max_distance=None,
+                 verbose=False):
         """
-        Determine the best eps and min_pts values and their resulting clusters.
-        :param data: The data to cluster.
+        Cluster data using the DBSCAN algorithm. Tries several values for
+        eps and min_pts and selects the resulting clusters with the
+        smallest percent error.
+        :param data: data to be clustered
+        :param answer_key: the expected clusters
+        :param min_distance: the smallest distance between two points in the
+        data set
+        :param max_distance: the largest distance between two points in the
+        data set
+        :param verbose: whether to print progress messages
         """
+        self.verboseprint(verbose, "Calling DBSCAN")
+        self.answer_key = answer_key
         self.generated_samples = data
         self.dimensions = len(data[0])
-        self.max_distance = None
         self.min_distance = None
-        for point1 in self.generated_samples:
-            for point2 in self.generated_samples:
-                if not array_equal(point1, point2):
-                    distance = self.get_distance(point1, point2)
-                    if self.max_distance is None or distance > \
-                            self.max_distance:
-                        self.max_distance = distance
-                    if self.min_distance is None or distance < \
-                            self.min_distance:
-                        self.min_distance = distance
+        self.max_distance = None
+        if min_distance is None or max_distance is None:
+            for point1 in self.generated_samples:
+                for point2 in self.generated_samples:
+                    if not array_equal(point1, point2):
+                        distance = self.get_distance(point1, point2)
+                        if self.max_distance is None or distance > \
+                                self.max_distance:
+                            self.max_distance = distance
+                        if self.min_distance is None or distance < \
+                                self.min_distance:
+                            self.min_distance = distance
         self.cluster_membership = None
         self.eps = None
         self.min_pts = None
-        self.cluster_membership = self.get_clusters(3, 2)
+        self.cluster_membership = None
         self.s_dbw = None
         self.percent_error = None
-        if len(self.generated_samples) < 10:
-            self.number_of_eps_values = 10
-        else:
-            self.number_of_eps_values = len(self.generated_samples)
         for min_pts in range(2, len(self.generated_samples)):
-            for multiplier in range(10): #self.number_of_eps_values)):
+            self.verboseprint(verbose, "Min pts: {}".format(min_pts))
+            for multiplier in range(1, 10):
                 epsilon = self.min_distance + ((self.max_distance -
                                                 self.min_distance) / 10 *
                                                multiplier)
-                print("Trying min pts: {} and eps: {}".format(min_pts,
-                                                              epsilon))
+                self.verboseprint(verbose, "\tEps: {}".format(epsilon))
                 clusters = self.get_clusters(epsilon, min_pts)
-                current_error = self.get_percent_error(clusters, answer_key)
+                current_error = self.get_percent_error(clusters, self.answer_key)
                 if self.percent_error is None or self.percent_error > \
                         current_error:
-                    print("New Percent error: {}".format(current_error))
-                    print(answer_key)
-                    print(clusters)
+                    self.verboseprint(verbose, "\t\tNew Percent error: {}".format(current_error))
                     self.percent_error = current_error
                     self.cluster_membership = clusters
                     if self.percent_error == 0:
                         return
-                # centers = self.get_centers(clusters)
-                # s_dbw = S_Dbw(self.generated_samples, clusters, centers)
-                # if self.s_dbw is None or s_dbw.S_Dbw < self.s_dbw:
-                #     self.s_dbw = s_dbw.S_Dbw
 
     def get_clusters(self, eps, min_pts):
         """
@@ -118,37 +120,3 @@ class Dbscan(ClusteringAlgorithm):
                 if min_cluster_num == cluster_number:
                     cluster_number += 1
         return cluster_membership
-
-    def get_centers(self, clusters):
-        cluster_number_to_center = dict()
-        for point_index in range(len(clusters)):
-            if clusters[point_index] in cluster_number_to_center:
-                cluster_number_to_center[clusters[point_index]][0] += \
-                    self.generated_samples[point_index]
-                cluster_number_to_center[clusters[point_index]][1] += 1
-            else:
-                cluster_number_to_center[clusters[point_index]] = [
-                    self.generated_samples[point_index], 1]
-        for a_key in cluster_number_to_center.keys():
-            cluster_number_to_center[a_key] = cluster_number_to_center[
-                                                  a_key][0] / \
-                                              cluster_number_to_center[a_key][
-                                                  1]
-
-        smallest_distances = ndarray(shape=(len(cluster_number_to_center),),
-                                     dtype=float)
-        centers = ndarray(shape=(len(cluster_number_to_center),), dtype=int)
-        for cluster_number in range(len(cluster_number_to_center)):
-            found_cluster_point = False
-            for index in range(len(self.generated_samples)):
-                if clusters[index] == cluster_number and \
-                    (found_cluster_point == False or
-                    get_distance(self.generated_samples[index],
-                    cluster_number_to_center[cluster_number]) <
-                     smallest_distances[cluster_number]):
-                    centers[cluster_number] = index
-                    smallest_distances[cluster_number] = get_distance(
-                        self.generated_samples[index],
-                    cluster_number_to_center[cluster_number])
-                    found_cluster_point = True
-        return centers

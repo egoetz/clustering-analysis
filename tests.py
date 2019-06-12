@@ -1,3 +1,5 @@
+# E Goetz
+# test file for clustering algorithm implementations
 from sklearn.datasets.samples_generator import make_blobs
 from dbscan import Dbscan
 from k_means import KMeans

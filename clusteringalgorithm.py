@@ -1,3 +1,5 @@
+# E Goetz
+# Abstract base class for clustering algorithms
 from abc import ABC, abstractmethod
 from numpy import ndarray
 from itertools import permutations
@@ -10,12 +12,26 @@ class ClusteringAlgorithm(ABC):
     @abstractmethod
     def __init__(self, data):
         """
-        Initailize clustering algorithm
+        Initialize clustering algorithm.
         :param data: The data set to be clustered
         """
+        self.generated_samples = data
         pass
 
-    def get_distance(self, point1, point2):
+    @staticmethod
+    def verboseprint(verbose, to_print):
+        """
+        Prints a message if verbose is True.
+        :param verbose: Bool specifying whether to be verbose or not
+        :param to_print: Message for a verbose program to print
+        :return: None
+        :side effect: If verbose is true, to_print is printed.
+        """
+        if verbose:
+            print(to_print)
+
+    @staticmethod
+    def get_distance(point1, point2):
         """
         Get the Euclidean distance between two different points.
         :param point1: Point to get distance to point2
@@ -27,7 +43,8 @@ class ClusteringAlgorithm(ABC):
             distance += (point1[dimension] - point2[dimension]) ** 2
         return distance
 
-    def get_percent_error(self, clusters, answer_key):
+    @staticmethod
+    def get_percent_error(clusters, answer_key):
         """
         Get the percent error of a clustering algorithm's clusters.
         :param clusters: The clusters as found by the clustering algorithm
@@ -56,6 +73,6 @@ class ClusteringAlgorithm(ABC):
                     cluster_match[i]][i]
             if matching_points > greatest_matching_points:
                 greatest_matching_points = matching_points
-        error_rate = (len(clusters) - greatest_matching_points) / len(clusters) * \
-                     100
+        error_rate = (len(clusters) - greatest_matching_points) / \
+            len(clusters) * 100
         return error_rate
